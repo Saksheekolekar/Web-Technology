@@ -1,0 +1,282 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" >
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+#main {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 5px;
+    margin-top: 20px;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    border: 1px solid gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.cell.taken {
+    pointer-events: none;
+}
+
+.message {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.reset {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: whitesmoke;
+    border: 1px solid dodgerblue;
+    color: dodgerblue;
+    border-radius: 8px;
+}
+
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <h1>TIC TAC TOE</h1>
+        <p id="ins">
+            Tap on a box to play.<br><br>
+            <b>Player X</b> starts first, followed by <b>Player O</b>.
+        </p>
+        <div id="board" class="board"></div>
+        <br>
+        <button id="reset" class="reset">RESET</button>
+        <p id="message" class="message"></p>
+    </div>
+    <script src="main.js"></script>
+</body>
+<script>
+    const TicTac = {
+    cPlayer: "X", // Tracks current player (X or O)
+    state: Array(9).fill(null), // Board state (null for empty cells)
+    gameOver: false, // Indicates if the game is over
+
+    // Initialize the game
+    init() {
+        this.cBoard();
+        document
+            .getElementById("reset")
+            .addEventListener("click", () => this.reset());
+    },
+
+    // Create the game board dynamically
+    cBoard() {
+        const board = document.getElementById("board");
+        board.innerHTML = ""; // Clear previous board
+        this.state.forEach((_, i) => {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.dataset.index = i;
+            board.appendChild(cell);
+        });
+        board.addEventListener("click", (e) => this.handleClick(e)); // Handle clicks on the board
+        this.uMessage(`Player ${this.cPlayer}'s turn`);
+    },
+
+    // Handle a cell click
+    handleClick(e) {
+        const cell = e.target;
+        const i = cell.dataset.index;
+
+        // Ignore clicks if game is over or cell is taken
+        if (this.gameOver || !cell.classList.contains("cell") || this.state[i])
+            return;
+
+        // Update board state and UI
+        this.state[i] = this.cPlayer;
+        cell.textContent = this.cPlayer;
+        cell.classList.add("taken");
+
+        // Check for winner or tie
+        const winCombo = this.checkWin();
+        if (winCombo) {
+            this.highlight(winCombo);
+            this.uMessage(`Player ${this.cPlayer} wins!`);
+            this.gameOver = true;
+        } else if (this.state.every((cell) => cell)) {
+            this.uMessage("It's a tie!");
+            this.gameOver = true;
+        } else {
+            // Switch players
+            this.cPlayer = this.cPlayer === "X" ? "O" : "X";
+            this.uMessage(`Player ${this.cPlayer}'s turn`);
+        }
+    },
+
+    // Check if there's a winning combination
+    checkWin() {
+        const wins = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8], // Rows
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8], // Columns
+            [0, 4, 8],
+            [2, 4, 6], // Diagonals
+        ];
+        return wins.find((combo) =>
+            combo.every((i) => this.state[i] === this.cPlayer)
+        );
+    },
+
+    // Highlight winning cells
+    highlight(combo) {
+        combo.forEach((i) => {
+            document.getElementById("board").children[i].style.color = "red";
+        });
+    },
+
+    // Reset the game
+    reset() {
+        this.state = Array(9).fill(null);
+        this.cPlayer = "X";
+        this.gameOver = false;
+        this.cBoard();
+    },
+
+    // Update the game status message
+    uMessage(msg) {
+        document.getElementById("message").textContent = msg;
+    },
+};
+
+// Start the game
+TicTac.init();
+const TicTac = {
+    cPlayer: "X", // Tracks current player (X or O)
+    state: Array(9).fill(null), // Board state (null for empty cells)
+    gameOver: false, // Indicates if the game is over
+
+    // Initialize the game
+    init() {
+        this.cBoard();
+        document
+            .getElementById("reset")
+            .addEventListener("click", () => this.reset());
+    },
+
+    // Create the game board dynamically
+    cBoard() {
+        const board = document.getElementById("board");
+        board.innerHTML = ""; // Clear previous board
+        this.state.forEach((_, i) => {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.dataset.index = i;
+            board.appendChild(cell);
+        });
+        board.addEventListener("click", (e) => this.handleClick(e)); // Handle clicks on the board
+        this.uMessage(`Player ${this.cPlayer}'s turn`);
+    },
+
+    // Handle a cell click
+    handleClick(e) {
+        const cell = e.target;
+        const i = cell.dataset.index;
+
+        // Ignore clicks if game is over or cell is taken
+        if (this.gameOver || !cell.classList.contains("cell") || this.state[i])
+            return;
+
+        // Update board state and UI
+        this.state[i] = this.cPlayer;
+        cell.textContent = this.cPlayer;
+        cell.classList.add("taken");
+
+        // Check for winner or tie
+        const winCombo = this.checkWin();
+        if (winCombo) {
+            this.highlight(winCombo);
+            this.uMessage(`Player ${this.cPlayer} wins!`);
+            this.gameOver = true;
+        } else if (this.state.every((cell) => cell)) {
+            this.uMessage("It's a tie!");
+            this.gameOver = true;
+        } else {
+            // Switch players
+            this.cPlayer = this.cPlayer === "X" ? "O" : "X";
+            this.uMessage(`Player ${this.cPlayer}'s turn`);
+        }
+    },
+
+    // Check if there's a winning combination
+    checkWin() {
+        const wins = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8], // Rows
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8], // Columns
+            [0, 4, 8],
+            [2, 4, 6], // Diagonals
+        ];
+        return wins.find((combo) =>
+            combo.every((i) => this.state[i] === this.cPlayer)
+        );
+    },
+
+    // Highlight winning cells
+    highlight(combo) {
+        combo.forEach((i) => {
+            document.getElementById("board").children[i].style.color = "red";
+        });
+    },
+
+    // Reset the game
+    reset() {
+        this.state = Array(9).fill(null);
+        this.cPlayer = "X";
+        this.gameOver = false;
+        this.cBoard();
+    },
+
+    // Update the game status message
+    uMessage(msg) {
+        document.getElementById("message").textContent = msg;
+    },
+};
+
+// Start the game
+TicTac.init();
+
+</script>
+</html>
